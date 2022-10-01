@@ -18,18 +18,20 @@ export class OtherStack {
         });
 
         this.redis = new elastiCache.CfnReplicationGroup(mainStack, 'NodeNsfwJs ElastiCache Failover', {
-            replicationGroupDescription: "",
+            replicationGroupDescription: "NodeNsfwJs ElastiCache Failover",
             cacheNodeType: 'cache.t3.micro',
             engine: 'redis',
             multiAzEnabled: true,
-            numCacheClusters: 3,
-            replicasPerNodeGroup: 2,
+            numCacheClusters: 2,
+            numNodeGroups: 3,
             automaticFailoverEnabled: true,
             securityGroupIds: [mainStack.redisSecurityGroup.securityGroupId],
             cacheSubnetGroupName: redisSubnetGroup.ref,
             autoMinorVersionUpgrade: true,
+            cacheParameterGroupName: 'default.redis6.x.cluster.on',
             port: 6379
         });
+
 
         this.redisEndpoint = this.redis.attrConfigurationEndPointAddress + ':' + this.redis.attrConfigurationEndPointPort;
 
