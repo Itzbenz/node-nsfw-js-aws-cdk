@@ -22,7 +22,7 @@ export class OtherStack {
             cacheNodeType: 'cache.t3.micro',
             engine: 'redis',
             multiAzEnabled: true,
-            numCacheClusters: 2,
+            replicasPerNodeGroup: 2,
             numNodeGroups: 3,
             automaticFailoverEnabled: true,
             securityGroupIds: [mainStack.redisSecurityGroup.securityGroupId],
