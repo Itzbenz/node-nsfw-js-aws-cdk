@@ -4,7 +4,11 @@
 - Auto Scaling Group
 - Load Balancer
 - Security Best Practice
+- Fault Tolerant
+- Horizontally Scalable
 - Three Tier Architecture
+
+Link to source code: https://github.com/o7-Fire/NodeNsfwJSAPI
 
 ## Useful commands
 
