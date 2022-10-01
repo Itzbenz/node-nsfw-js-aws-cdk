@@ -1,8 +1,10 @@
-# Welcome to your CDK TypeScript project
-
-This is a blank project for CDK development with TypeScript.
-
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+# Node Nsfw Js API TypeScript AWS CDK
+- Multi-AZ
+- Dual Stack
+- Auto Scaling Group
+- Load Balancer
+- Security Best Practice
+- Three Tier Architecture
 
 ## Useful commands
 
