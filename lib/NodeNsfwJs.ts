@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
+import {aws_ec2 as ec2, custom_resources as cr} from 'aws-cdk-lib';
 import {Construct} from 'constructs';
-import {aws_ec2 as ec2, aws_elasticloadbalancingv2 as elbv2, custom_resources as cr, aws_efs as efs, aws_elasticache as elastiCache} from 'aws-cdk-lib';
 import {SecurityGroup, SelectedSubnets, Vpc} from 'aws-cdk-lib/aws-ec2';
 import {OtherStack} from "./OtherStack";
 import {ApiStack} from "./ApiStack";
@@ -96,7 +96,7 @@ export class NodeNsfwJs extends cdk.Stack {
         });
 
 
-        //create security group for load balancer, allow http and https
+        //create security group for load balancer, allow http, https and icmp
         //create security group for API app, allow 5656 from load balancer
         //create security group for Redis, allow 6379 from API app
         //create security group for EFS, allow 2049 from API app
@@ -111,6 +111,8 @@ export class NodeNsfwJs extends cdk.Stack {
         this.loadBalancerSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Allow https IPv4 from anywhere');
         this.loadBalancerSecurityGroup.addIngressRule(ec2.Peer.anyIpv6(), ec2.Port.tcp(80), 'Allow http IPv6 from anywhere');
         this.loadBalancerSecurityGroup.addIngressRule(ec2.Peer.anyIpv6(), ec2.Port.tcp(443), 'Allow https IPv6 from anywhere');
+        this.loadBalancerSecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.icmpPing(), 'Allow icmp IPv4 from anywhere');
+        this.loadBalancerSecurityGroup.addIngressRule(ec2.Peer.anyIpv6(), ec2.Port.icmpPing(), 'Allow icmp IPv6 from anywhere');
 
         this.apiSecurityGroup = new ec2.SecurityGroup(this, 'API Security Group', {
             vpc: this.vpc,
@@ -121,6 +123,7 @@ export class NodeNsfwJs extends cdk.Stack {
 
         this.apiSecurityGroup.addIngressRule(this.loadBalancerSecurityGroup, ec2.Port.tcp(5656), 'Allow 5656 from load balancer');
 
+        //if(!process.env.NO_REDIS) {
         this.redisSecurityGroup = new ec2.SecurityGroup(this, 'Redis Security Group', {
             vpc: this.vpc,
             allowAllOutbound: true,
@@ -129,17 +132,18 @@ export class NodeNsfwJs extends cdk.Stack {
         });
 
         this.redisSecurityGroup.addIngressRule(this.apiSecurityGroup, ec2.Port.tcp(6379), 'Allow 6379 from API app');
+        //}
+        if (!process.env.NO_EFS) {
+            this.efsSecurityGroup = new ec2.SecurityGroup(this, 'EFS Security Group', {
+                vpc: this.vpc,
+                allowAllOutbound: true,
+                description: 'Allow 2049 from API app',
+                securityGroupName: 'EFSSecurityGroup',
+            });
 
-        this.efsSecurityGroup = new ec2.SecurityGroup(this, 'EFS Security Group', {
-            vpc: this.vpc,
-            allowAllOutbound: true,
-            description: 'Allow 2049 from API app',
-            securityGroupName: 'EFSSecurityGroup',
-        });
+            this.efsSecurityGroup.addIngressRule(this.apiSecurityGroup, ec2.Port.tcp(2049), 'Allow 2049 from API app');
 
-        this.efsSecurityGroup.addIngressRule(this.apiSecurityGroup, ec2.Port.tcp(2049), 'Allow 2049 from API app');
-
-
+        }
 
         const otherStack = new OtherStack(this);
         const apiStack = new ApiStack(this, otherStack);

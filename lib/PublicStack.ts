@@ -1,12 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
-import {Construct} from 'constructs';
-import {aws_ec2 as ec2, aws_elasticloadbalancingv2 as elbv2} from "aws-cdk-lib";
+import {aws_elasticloadbalancingv2 as elbv2, aws_route53 as route53} from 'aws-cdk-lib';
 import {NodeNsfwJs} from "./NodeNsfwJs";
 import {ApiStack} from "./ApiStack";
 
 
 export class PublicStack {
     private publicLoadBalancer: elbv2.ApplicationLoadBalancer;
+
     constructor(mainStack: NodeNsfwJs, apiStack: ApiStack) {
 
 
@@ -27,9 +27,28 @@ export class PublicStack {
             defaultAction: elbv2.ListenerAction.forward([apiStack.apiTargetGroup])
         });
 
+        //add Route 53 Health Check
+        new route53.CfnHealthCheck(mainStack, 'NodeNsfwJsELBCheck', {
+            healthCheckConfig: {
+                type: 'HTTP',
+                resourcePath: '/api/v2/test',
+                failureThreshold: 3,
+                fullyQualifiedDomainName: this.publicLoadBalancer.loadBalancerDnsName,
+                port: 80,
+                requestInterval: 30,
+            },
+            healthCheckTags: [
+                {
+                    key: 'Name',
+                    value: 'NodeNsfwJsELBCheck-' + mainStack.region
+                }
+            ]
+        });
+
         new cdk.CfnOutput(mainStack, 'PublicLoadBalancerDNS', {
             value: this.publicLoadBalancer.loadBalancerDnsName
         });
+
 
     }
 }
