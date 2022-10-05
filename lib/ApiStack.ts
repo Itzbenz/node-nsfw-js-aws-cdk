@@ -161,8 +161,8 @@ export class ApiStack{
 
         //Hyperscaling
         this.apiAutoScalingGroup.scaleOnCpuUtilization('apiAutoScalingGroupScaleOnCpuUtilization', {
-            targetUtilizationPercent: 10,
-            cooldown: cdk.Duration.seconds(10)
+            targetUtilizationPercent: 40,
+            cooldown: cdk.Duration.seconds(120)
         });
 
 
