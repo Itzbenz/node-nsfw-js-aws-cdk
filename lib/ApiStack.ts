@@ -150,14 +150,14 @@ export class ApiStack{
             maxCapacity: 3,
             vpcSubnets: mainStack.apiSubnets,
             healthCheck: autoscaling.HealthCheck.elb({
-                grace: cdk.Duration.seconds(300)
+                grace: cdk.Duration.seconds(30)
             }),
 
         });
 
 
         this.apiAutoScalingGroup.scaleOnCpuUtilization('apiAutoScalingGroupScaleOnCpuUtilization', {
-            targetUtilizationPercent: 90,
+            targetUtilizationPercent: 30,
             cooldown: cdk.Duration.seconds(10)
         });
 
