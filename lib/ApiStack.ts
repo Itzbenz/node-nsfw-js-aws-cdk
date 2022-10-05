@@ -107,7 +107,7 @@ export class ApiStack{
 
         //Amazon Linux 2 AMI (HVM), SSD Volume Type - ami-026b57f3c383c2eec
         //c6a.large
-        this.apiLaunchTemplate = new ec2.LaunchTemplate(mainStack, 'apiLaunchTemplate', {
+        let templateProps: any = {
             launchTemplateName: 'NodeNsfwJsApiLaunchTemplate',
             machineImage: ec2.MachineImage.latestAmazonLinux({
                 generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2
@@ -116,12 +116,14 @@ export class ApiStack{
             securityGroup: mainStack.apiSecurityGroup,
             role: ec2Role,
             userData: userDataEc2,
-            spotOptions: {
+        };
+        if (!process.env.NO_SPOT) {
+            templateProps.spotOptions = {
                 interruptionBehavior: ec2.SpotInstanceInterruption.TERMINATE,
                 requestType: ec2.SpotRequestType.ONE_TIME,
             }
-
-        });
+        }
+        this.apiLaunchTemplate = new ec2.LaunchTemplate(mainStack, 'apiLaunchTemplate', templateProps);
 
 
         //Target Group
@@ -134,7 +136,8 @@ export class ApiStack{
             healthCheck: {
                 path: '/',
                 interval: cdk.Duration.seconds(30),
-                timeout: cdk.Duration.seconds(5),
+                timeout: cdk.Duration.seconds(10),
+                unhealthyThresholdCount: 6,
                 healthyHttpCodes: '200-399',
             }
         });
@@ -156,8 +159,9 @@ export class ApiStack{
         });
 
 
+        //Hyperscaling
         this.apiAutoScalingGroup.scaleOnCpuUtilization('apiAutoScalingGroupScaleOnCpuUtilization', {
-            targetUtilizationPercent: 30,
+            targetUtilizationPercent: 10,
             cooldown: cdk.Duration.seconds(10)
         });
 
