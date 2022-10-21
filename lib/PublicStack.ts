@@ -1,11 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import {aws_elasticloadbalancingv2 as elbv2,
-    aws_route53 as route53,
-    aws_route53_targets as route53_targets,
-} from 'aws-cdk-lib';
+import {aws_elasticloadbalancingv2 as elbv2, aws_route53 as route53} from 'aws-cdk-lib';
 import {NodeNsfwJs} from "./NodeNsfwJs";
 import {ApiStack} from "./ApiStack";
-import {throws} from "assert";
 
 
 export class PublicStack {
@@ -52,24 +48,7 @@ export class PublicStack {
         new cdk.CfnOutput(mainStack, 'PublicLoadBalancerDNS', {
             value: this.publicLoadBalancer.loadBalancerDnsName
         });
-        if(process.env.R53_ZONE_ID){
-            const R53_ZONE_NAME: string = process.env.R53_ZONE_NAME || '';
-            const R53_ZONE_ID = process.env.R53_ZONE_ID;
-            if(!R53_ZONE_NAME){
-                throw new Error('R53_ZONE_NAME is required if R53_ZONE_ID is set');
-            }
-            new route53.RecordSet(mainStack, 'NodeNsfwJsELBRecord', {
-                zone: route53.HostedZone.fromHostedZoneAttributes(mainStack, 'NodeNsfwJsELBRecordZone', {
-                    hostedZoneId: R53_ZONE_ID,
-                    zoneName: R53_ZONE_NAME
-                }),
-                recordName: 'api.' + R53_ZONE_NAME,
-                recordType: route53.RecordType.A,
-                target: route53.RecordTarget.fromAlias(new route53_targets.LoadBalancerTarget(this.publicLoadBalancer)),
-            });
 
-
-        }
 
     }
 }

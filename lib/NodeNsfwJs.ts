@@ -20,8 +20,11 @@ export class NodeNsfwJs extends cdk.Stack {
     public redisSecurityGroup: SecurityGroup;
     public efsSecurityGroup: SecurityGroup;
     public loadBalancerSecurityGroup: SecurityGroup;
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    public isPrimaryRegion: boolean;
+
+    constructor(scope: Construct, id: string, props?: cdk.StackProps, isPrimaryRegion: boolean = true) {
         super(scope, id, props);
+        this.isPrimaryRegion = isPrimaryRegion;
         this.vpc = new ec2.Vpc(this, 'NodeNsfwJs', {
 
             cidr: '172.16.0.0/22',

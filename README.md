@@ -24,8 +24,6 @@ Link to source code: https://github.com/o7-Fire/NodeNsfwJSAPI
 * `export NO_CLOUDWATCH=true` to disable CloudWatch file logging
 * `export NO_SPOT=true` to disable Spot Instance
 * `export REGIONS=us-east-1,us-east-2` to deploy to multiple regions
-* `export R53_ZONE_ID=Z123456789` to deploy with Route53
-* `export R53_ZONE_NAME=example.com` to deploy with Route53
 
 ## Architecture
 ![NodeNsfwJsApiAWSCDKArchitecture](https://user-images.githubusercontent.com/49940811/193414050-d7b74f45-3113-4597-980f-f3c03c5e5c8a.png)

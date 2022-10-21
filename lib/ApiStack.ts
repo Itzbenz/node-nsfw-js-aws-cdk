@@ -149,7 +149,7 @@ export class ApiStack{
             vpc: mainStack.vpc,
             autoScalingGroupName: 'NodeNsfwJsApiAutoScalingGroup',
             launchTemplate: this.apiLaunchTemplate,
-            minCapacity: 1,
+            minCapacity: mainStack.isPrimaryRegion ? 1 : 0,
             maxCapacity: 3,
             vpcSubnets: mainStack.apiSubnets,
             healthCheck: autoscaling.HealthCheck.elb({
