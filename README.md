@@ -29,3 +29,5 @@ Link to source code: https://github.com/o7-Fire/NodeNsfwJSAPI
 ![NodeNsfwJsApiAWSCDKArchitecture](https://user-images.githubusercontent.com/49940811/193414050-d7b74f45-3113-4597-980f-f3c03c5e5c8a.png)
 
 Sorry for the wacky design, OP burned his billing while drawing this 
+
+### This repo is part of [AWS Tutorial for NodeNsfwJs](https://github.com/o7-Fire/NodeNsfwJSAPI/wiki/How-(not)-to-use-AWS-to-host)
